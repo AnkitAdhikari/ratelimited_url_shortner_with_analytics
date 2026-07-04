@@ -1,6 +1,8 @@
 import { loadEnv } from './config/env.js';
 import { createSequelize } from './db/client.js';
 import express from 'express';
+import pino from 'pino';
+import { pinoHttp } from 'pino-http';
 
 try {
   process.loadEnvFile();
@@ -10,6 +12,29 @@ try {
 const env = loadEnv();
 
 const app = express();
+
+const logger = pino({ base: null });
+
+app.use(
+  pinoHttp({
+    logger,
+    redact: {
+      paths: ['req.headers.cookie', 'req.headers.authorization'],
+      remove: true,
+    },
+    serializers: {
+      req(req) {
+        return { method: req.method, url: req.url };
+      },
+      res(res) {
+        return { statusCode: res.statusCode };
+      },
+    },
+    autoLogging: {
+      ignore: (req) => req.url === '/favicon.ico',
+    },
+  }),
+);
 
 app.get('/live', (req, res) => {
   res.status(200).json({
