@@ -4,6 +4,8 @@ import { pinoHttp } from 'pino-http';
 
 import Url from './db/models/url.js';
 import { env, sequelize } from './db/client.js';
+import { validateQuery } from './validations/index.js';
+import { urlSchema } from './validations/urlSchema.js';
 const app = express();
 
 const logger = pino({ base: null });
@@ -36,18 +38,26 @@ app.get('/live', (req, res) => {
   });
 });
 
-app.post('/api/url', async (req, res) => {
-  const { longUrl } = req.query;
+app.post('/api/url', validateQuery(urlSchema), async (req, res) => {
+  const { longURL } = req.query;
 
-  const demoAlias = 'Abc123';
+  const demoAlias = 'ABc123';
 
   try {
+    const existingUrl = await Url.findOne({ where: { longURL } });
+
+    if (existingUrl) {
+      return res.status(200).json({
+        shortURL: `${env.PUBLIC_BASE_URL}/${existingUrl.alias}`,
+        longURL: existingUrl.longURL,
+      });
+    }
+
     const url = await Url.create({
       alias: demoAlias,
-      longURL: longUrl,
+      longURL,
     });
-    res.status(201).json({
-      id: Number(url.id),
+    return res.status(201).json({
       shortURL: `${env.PUBLIC_BASE_URL}/${url.alias}`,
       longURL: url.longURL,
     });
