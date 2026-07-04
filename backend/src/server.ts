@@ -57,6 +57,22 @@ app.post('/api/url', async (req, res) => {
   }
 });
 
+app.get('/api/:alias', async (req, res) => {
+  const { alias } = req.params;
+
+  try {
+    const url = await Url.findOne({ where: { alias } });
+    console.log('url:', url);
+    if (!url) {
+      return res.status(404).json({ error: 'URL not found' });
+    }
+    res.status(302).redirect(url.longURL);
+  } catch (error) {
+    console.error('Error creating URL:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.listen(env.PORT, async () => {
   console.log('server is running ...');
   try {

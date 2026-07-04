@@ -28,3 +28,16 @@ Typescript based express and react fullstack app for url shortner which implemen
 - validation
 - one of alias generation algorithm implementation
 - handle already generated url both alias and longUrl
+
+## Security concern to look at later
+
+-[X] sql injection (auto handled by sequeliez ORM, caution for raw query)
+
+- cors as per assesment
+
+## setting up url redirect route /api/:alias
+
+### workings:
+
+- Throw error when alias not found
+- uses 302 as temporary redirect alter impt for analytics
