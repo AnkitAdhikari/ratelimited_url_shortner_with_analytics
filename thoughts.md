@@ -20,3 +20,11 @@ Typescript based express and react fullstack app for url shortner which implemen
 ## Postgres docker image
 
 `docker run --name my-postgres -e POSTGRES_PASSWORD=root -e POSTGRES_USER=root -e POSTGRES_DB=rlus -p 5432:5432 -v pgdata:/var/lib/postgresql/data -d postgres:16`
+
+## Setting up url alias generation route /api/alias
+
+### ToDo:
+
+- validation
+- one of alias generation algorithm implementation
+- handle already generated url both alias and longUrl
