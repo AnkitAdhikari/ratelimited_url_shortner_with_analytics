@@ -26,8 +26,10 @@ Typescript based express and react fullstack app for url shortner which implemen
 ### ToDo:
 
 - [x] validation(added url validation for the user input url)
-- one of alias generation algorithm implementation
+- [x] one of alias generation algorithm implementation
 - [x] handle already generated url both alias and longUrl
+- [] later i might consider another alias generation algorithm i.e Hash + collision resolution + bloom filter for exact non enumerable alias
+- [] also i must not allow user to create short url of our domain is could lead to back and forth redirects
 
 ## Security concern to look at later
 

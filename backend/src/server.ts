@@ -6,6 +6,8 @@ import Url from './db/models/url.js';
 import { env, sequelize } from './db/client.js';
 import { validateQuery } from './validations/index.js';
 import { urlSchema } from './validations/urlSchema.js';
+import { appErrorHandler } from './middleware/errors.middleware.js';
+import { toBase62 } from './utils/base62.js';
 const app = express();
 
 const logger = pino({ base: null });
@@ -41,11 +43,8 @@ app.get('/live', (req, res) => {
 app.post('/api/url', validateQuery(urlSchema), async (req, res) => {
   const { longURL } = req.query;
 
-  const demoAlias = 'ABc123';
-
   try {
     const existingUrl = await Url.findOne({ where: { longURL } });
-
     if (existingUrl) {
       return res.status(200).json({
         shortURL: `${env.PUBLIC_BASE_URL}/${existingUrl.alias}`,
@@ -53,13 +52,19 @@ app.post('/api/url', validateQuery(urlSchema), async (req, res) => {
       });
     }
 
-    const url = await Url.create({
-      alias: demoAlias,
-      longURL,
+    const created = await sequelize.transaction(async (t) => {
+      const newUrl = await Url.create({ longURL, alias: '' }, { transaction: t });
+
+      const alias = toBase62(newUrl.id);
+      newUrl.alias = alias;
+      await newUrl.save({ transaction: t });
+
+      return newUrl;
     });
+
     return res.status(201).json({
-      shortURL: `${env.PUBLIC_BASE_URL}/${url.alias}`,
-      longURL: url.longURL,
+      shortURL: `${env.PUBLIC_BASE_URL}/${created.alias}`,
+      longURL: created.longURL,
     });
   } catch (error) {
     console.error('Error creating URL:', error);
@@ -82,6 +87,8 @@ app.get('/api/:alias', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+app.use(appErrorHandler);
 
 app.listen(env.PORT, async () => {
   console.log('server is running ...');
