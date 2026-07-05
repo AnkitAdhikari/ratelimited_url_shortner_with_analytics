@@ -2,12 +2,14 @@ import express from 'express';
 import pino from 'pino';
 import { pinoHttp } from 'pino-http';
 
-import Url from './db/models/url.js';
+import { Click, Url } from './db/models/index.js';
 import { env, sequelize } from './db/client.js';
-import { validateQuery } from './validations/index.js';
-import { urlSchema } from './validations/urlSchema.js';
+import { validateParams, validateQuery } from './validations/index.js';
+import { aliasSchema, urlSchema } from './validations/urlSchema.js';
 import { appErrorHandler } from './middleware/errors.middleware.js';
 import { toBase62 } from './utils/base62.js';
+import { getDailyClicks } from './services/analytics.service.js';
+import { InternalServerError } from './utils/errors/app.errors.js';
 const app = express();
 
 const logger = pino({ base: null });
@@ -72,6 +74,27 @@ app.post('/api/url', validateQuery(urlSchema), async (req, res) => {
   }
 });
 
+app.get('/api/url/:alias/analytics', validateParams(aliasSchema), async (req, res) => {
+  const { alias } = req.params;
+
+  const url = await Url.findOne({ where: { alias } });
+  if (!url) {
+    return res.status(404).json({ error: 'Short URL not found' });
+  }
+
+  const data = await getDailyClicks({ urlId: url.id, days: 7 });
+  return res.json({ alias, data });
+});
+
+app.get('/api/analytics/overview', async (req, res) => {
+  try {
+    const data = await getDailyClicks({ days: 7 });
+    return res.status(200).json({ data });
+  } catch (error) {
+    throw new InternalServerError('Failed to fetch analytics overview');
+  }
+});
+
 app.get('/api/:alias', async (req, res) => {
   const { alias } = req.params;
 
@@ -81,6 +104,10 @@ app.get('/api/:alias', async (req, res) => {
     if (!url) {
       return res.status(404).json({ error: 'URL not found' });
     }
+    Click.create({
+      urlId: url.id,
+      ipAddress: req.ip,
+    });
     res.status(302).redirect(url.longURL);
   } catch (error) {
     console.error('Error creating URL:', error);

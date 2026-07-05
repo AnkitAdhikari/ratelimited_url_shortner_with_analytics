@@ -10,5 +10,6 @@ export class InternalServerError implements AppError {
     this.statusCode = 500;
     this.message = message;
     this.name = 'InternalServerError';
+    console.error(this);
   }
 }

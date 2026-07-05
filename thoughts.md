@@ -33,7 +33,7 @@ Typescript based express and react fullstack app for url shortner which implemen
 
 ## Security concern to look at later
 
-- [x] sql injection (auto handled by sequeliez ORM, caution for raw query)
+- [x] sql injection (auto handled by sequeliez ORM, [x] caution for raw query)
 - cors as per assesment
 
 ## setting up url redirect route /api/:alias
@@ -42,3 +42,10 @@ Typescript based express and react fullstack app for url shortner which implemen
 
 - Throw error when alias not found
 - uses 302 as temporary redirect alter impt for analytics
+
+## Click Analytics
+
+- [x] a sucessufull click records user ip, timestamp at which click was registed and their IP address
+- [x] identify the response structure for the chart
+- [x] added get analtics route for specific and overall alias
+- [x] validation for alias param
