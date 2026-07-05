@@ -1,0 +1,141 @@
+info:
+  name: getAllUrls
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: http://localhost:3000/api/urls
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: success
+    request:
+      url: http://localhost:3000/api/urls
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: access-control-allow-origin
+          value: http://localhost:5173
+        - name: vary
+          value: Origin
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "1630"
+        - name: etag
+          value: W/"65e-qrNV3oo3urWNZkUO6BA2kWEeooI"
+        - name: date
+          value: Sun, 05 Jul 2026 08:53:12 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "urls": [
+              {
+                "id": "31",
+                "alias": "v     ",
+                "longURL": "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800",
+                "createdAt": "2026-07-05T06:51:50.677Z",
+                "totalClicks": "1"
+              },
+              {
+                "id": "30",
+                "alias": "u     ",
+                "longURL": "https://www.youtube.com/",
+                "createdAt": "2026-07-05T06:30:24.268Z",
+                "totalClicks": "1"
+              },
+              {
+                "id": "29",
+                "alias": "t     ",
+                "longURL": "https://www.mix.com/",
+                "createdAt": "2026-07-04T20:47:43.320Z",
+                "totalClicks": "2"
+              },
+              {
+                "id": "27",
+                "alias": "8vFW7R",
+                "longURL": "https://www.fox.com/",
+                "createdAt": "2026-07-04T20:34:30.295Z",
+                "totalClicks": "4"
+              },
+              {
+                "id": "26",
+                "alias": "U0QoCQ",
+                "longURL": "https://www.mango.com/",
+                "createdAt": "2026-07-04T20:34:16.901Z",
+                "totalClicks": "0"
+              },
+              {
+                "id": "25",
+                "alias": "00000p",
+                "longURL": "https://www.box.com/",
+                "createdAt": "2026-07-04T20:21:33.730Z",
+                "totalClicks": "0"
+              },
+              {
+                "id": "24",
+                "alias": "00000o",
+                "longURL": "https://www.apple.com/",
+                "createdAt": "2026-07-04T20:21:17.103Z",
+                "totalClicks": "0"
+              },
+              {
+                "id": "23",
+                "alias": "n     ",
+                "longURL": "https://www.question.com/",
+                "createdAt": "2026-07-04T20:15:41.108Z",
+                "totalClicks": "0"
+              },
+              {
+                "id": "22",
+                "alias": "m     ",
+                "longURL": "https://www.answer.com/",
+                "createdAt": "2026-07-04T20:15:05.064Z",
+                "totalClicks": "0"
+              },
+              {
+                "id": "21",
+                "alias": "l     ",
+                "longURL": "https://www.hbo.com/",
+                "createdAt": "2026-07-04T20:02:28.310Z",
+                "totalClicks": "0"
+              },
+              {
+                "id": "19",
+                "alias": "ABc123",
+                "longURL": "https://www.x.com/",
+                "createdAt": "2026-07-04T18:43:41.358Z",
+                "totalClicks": "0"
+              },
+              {
+                "id": "7",
+                "alias": "Abc123",
+                "longURL": "https://www.facebook.com/",
+                "createdAt": "2026-07-04T16:36:34.042Z",
+                "totalClicks": "0"
+              },
+              {
+                "id": "1",
+                "alias": "abc123",
+                "longURL": "https://www.google.com/",
+                "createdAt": "2026-07-04T16:29:56.195Z",
+                "totalClicks": "0"
+              }
+            ]
+          }

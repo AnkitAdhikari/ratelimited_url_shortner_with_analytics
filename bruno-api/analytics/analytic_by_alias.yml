@@ -1,0 +1,87 @@
+info:
+  name: analytic_by_alias
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: http://localhost:3000/api/urls/:alias/analytics
+  params:
+    - name: alias
+      value: 8vFW7R
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: success
+    request:
+      url: http://localhost:3000/api/urls/:alias/analytics
+      method: GET
+      params:
+        - name: alias
+          value: 8vFW7R
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: access-control-allow-origin
+          value: http://localhost:5173
+        - name: vary
+          value: Origin
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "246"
+        - name: etag
+          value: W/"f6-YS4Vnt75otq78rn3SylyQIcGM/Y"
+        - name: date
+          value: Sun, 05 Jul 2026 08:58:17 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "alias": "8vFW7R",
+            "series": [
+              {
+                "day": "2026-06-29",
+                "count": 0
+              },
+              {
+                "day": "2026-06-30",
+                "count": 0
+              },
+              {
+                "day": "2026-07-01",
+                "count": 0
+              },
+              {
+                "day": "2026-07-02",
+                "count": 0
+              },
+              {
+                "day": "2026-07-03",
+                "count": 0
+              },
+              {
+                "day": "2026-07-04",
+                "count": 0
+              },
+              {
+                "day": "2026-07-05",
+                "count": 4
+              }
+            ]
+          }

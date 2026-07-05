@@ -1,0 +1,109 @@
+info:
+  name: createShortenUrl
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/api/urls?longURL=https://www.mix.com/
+  params:
+    - name: longURL
+      value: https://www.mix.com/
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example
+    request:
+      url: http://localhost:3000/api/urls?longURL=https://www.mix.com/
+      method: POST
+      params:
+        - name: longURL
+          value: https://www.mix.com/
+          type: query
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: access-control-allow-origin
+          value: http://localhost:5173
+        - name: vary
+          value: Origin
+        - name: x-ratelimit-limit
+          value: "5"
+        - name: x-ratelimit-remaining
+          value: "4"
+        - name: x-ratelimit-reset
+          value: "1783241580"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "71"
+        - name: etag
+          value: W/"47-owr/2569txTSROQTaY1jE07s0Sg"
+        - name: date
+          value: Sun, 05 Jul 2026 08:52:19 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "shortURL": "http://localhost:3000/t",
+            "longURL": "https://www.mix.com/"
+          }
+  - name: ratelimited
+    request:
+      url: http://localhost:3000/api/urls?longURL=https://www.mix.com/
+      method: POST
+      params:
+        - name: longURL
+          value: https://www.mix.com/
+          type: query
+    response:
+      status: 429
+      statusText: Too Many Requests
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: access-control-allow-origin
+          value: http://localhost:5173
+        - name: vary
+          value: Origin
+        - name: x-ratelimit-limit
+          value: "5"
+        - name: x-ratelimit-remaining
+          value: "0"
+        - name: x-ratelimit-reset
+          value: "1783241760"
+        - name: retry-after
+          value: "52"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "52"
+        - name: etag
+          value: W/"34-XwpYSvEd7E3/7kwqZjHKLiqsWrg"
+        - name: date
+          value: Sun, 05 Jul 2026 08:55:08 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "error": "Too Many Requests",
+            "retryAfterSeconds": 52
+          }

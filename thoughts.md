@@ -65,3 +65,8 @@ Typescript based express and react fullstack app for url shortner which implemen
 - using fetch api rather than any libary as it doesn't have large code base of tag and tag invalidation and config would just boiler plate than actual usuage
 - add blocker for rate limitation
 - researched grepsr brand and its implementation
+
+## Routes refactoring
+
+- routes were already cluttered on server file
+- need to refator to thier own folder to keep server file lean
