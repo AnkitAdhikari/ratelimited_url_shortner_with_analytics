@@ -69,4 +69,4 @@ Typescript based express and react fullstack app for url shortner which implemen
 ## Routes refactoring
 
 - routes were already cluttered on server file
-- need to refator to thier own folder to keep server file lean
+- [x] need to refator to thier own folder to keep server file lean
