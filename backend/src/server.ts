@@ -19,8 +19,15 @@ const app = express();
 
 const logger = pino({ base: null });
 
-// allow all cross-origin requests
-app.use(cors({ origin: '*' }));
+// restrict to localhost:5173 for GET and POST only
+app.use(
+  cors({
+    origin: env.CORS_ORIGIN,
+    methods: ['GET', 'POST'],
+    credentials: false,
+  }),
+);
+
 app.use(express.json());
 app.use(
   pinoHttp({
