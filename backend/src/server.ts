@@ -14,6 +14,7 @@ import { InternalServerError } from './utils/errors/app.errors.js';
 import { MapStore } from './ratelimit/store.js';
 import { FixedWindowLimiter } from './ratelimit/fixedWindow.js';
 import { createRateLimit } from './middleware/rateLimit.middleware.js';
+import { col, fn } from 'sequelize';
 const app = express();
 
 const logger = pino({ base: null });
@@ -88,6 +89,24 @@ app.post('/api/urls', rateLimit, validateQuery(urlSchema), async (req, res) => {
   }
 });
 
+app.get('/api/urls', async (req, res) => {
+  try {
+    const urls = await Url.findAll({
+      attributes: {
+        include: [[fn('COUNT', col('clicks.id')), 'totalClicks']],
+      },
+      include: [{ model: Click, as: 'clicks', attributes: [] }],
+      group: ['Url.id'],
+      order: [['createdAt', 'DESC']],
+      subQuery: false,
+    });
+    res.json({ urls });
+  } catch (error) {
+    console.error('Error fetching URLs:', error);
+    throw new InternalServerError('Failed to fetch URLs');
+  }
+});
+
 app.get('/api/urls/:alias/analytics', validateParams(aliasSchema), async (req, res) => {
   const { alias } = req.params;
 
@@ -96,8 +115,8 @@ app.get('/api/urls/:alias/analytics', validateParams(aliasSchema), async (req, r
     return res.status(404).json({ error: 'Short URL not found' });
   }
 
-  const data = await getDailyClicks({ urlId: url.id, days: 7 });
-  return res.json({ alias, data });
+  const series = await getDailyClicks({ urlId: url.id, days: 7 });
+  return res.json({ alias, series });
 });
 
 app.get('/api/analytics/overview', async (req, res) => {
