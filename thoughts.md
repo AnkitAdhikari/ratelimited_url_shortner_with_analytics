@@ -49,3 +49,12 @@ Typescript based express and react fullstack app for url shortner which implemen
 - [x] identify the response structure for the chart
 - [x] added get analtics route for specific and overall alias
 - [x] validation for alias param
+
+## rate limiter
+
+- after understanding all the available rate limit strategery
+- decided to go with the rate limit algorithm that assesment mentions
+- I acknowledge the 2x max requests at the interval edges
+- designed swapable stragey for later using other algorithms
+- extensible with cache stategy with redis later to fight against slowness of disk access
+- currently implemets store using java script Map

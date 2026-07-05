@@ -10,6 +10,9 @@ import { appErrorHandler } from './middleware/errors.middleware.js';
 import { toBase62 } from './utils/base62.js';
 import { getDailyClicks } from './services/analytics.service.js';
 import { InternalServerError } from './utils/errors/app.errors.js';
+import { MapStore } from './ratelimit/store.js';
+import { FixedWindowLimiter } from './ratelimit/fixedWindow.js';
+import { createRateLimit } from './middleware/rateLimit.middleware.js';
 const app = express();
 
 const logger = pino({ base: null });
@@ -36,13 +39,21 @@ app.use(
   }),
 );
 
+const rateLimit = createRateLimit(
+  new FixedWindowLimiter({
+    store: new MapStore(),
+    max: env.RATE_LIMIT_MAX_REQUESTS,
+    windowSeconds: env.RATE_LIMIT_WINDOW_SECONDS,
+  }),
+);
+
 app.get('/live', (req, res) => {
   res.status(200).json({
     message: 'Live and running',
   });
 });
 
-app.post('/api/url', validateQuery(urlSchema), async (req, res) => {
+app.post('/api/url', rateLimit, validateQuery(urlSchema), async (req, res) => {
   const { longURL } = req.query;
 
   try {

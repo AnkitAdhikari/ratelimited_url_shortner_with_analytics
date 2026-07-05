@@ -1,7 +1,17 @@
 import type { NextFunction, Request, Response } from 'express';
-import type { AppError } from '../utils/errors/app.errors.js';
+import { HttpError, type AppError } from '../utils/errors/app.errors.js';
 
-export const appErrorHandler = (err: AppError, req: Request, res: Response, next: NextFunction) => {
+export const appErrorHandler = (
+  err: HttpError | AppError,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (err instanceof HttpError) {
+    res.status(err.status).json({ error: err.message, ...err.details });
+    return;
+  }
+
   res.status(err.statusCode).json({
     success: false,
     message: err.message,
