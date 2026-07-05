@@ -1,0 +1,5 @@
+# TLS + reverse proxy to nginx. Auto-gets a Let's Encrypt cert for SITE_ADDRESS.
+{$SITE_ADDRESS} {
+	encode zstd gzip
+	reverse_proxy frontend:80
+}
