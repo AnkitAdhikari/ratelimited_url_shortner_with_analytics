@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { createShortUrl } from '../../api/client';
 import { remainingSeconds } from './countdown';
+import { getUrlError } from './urlSchema';
 
 interface SuccessState {
   alias: string;
@@ -31,22 +32,34 @@ export default function UrlCreator() {
     return () => clearInterval(id);
   }, [rateLimitUntil]);
 
+  const trimmedUrl = url.trim();
+
+  const validationMessage = trimmedUrl === '' ? null : getUrlError(trimmedUrl);
+
   const disabled = submitting || rateLimitUntil !== null;
+  const canSubmit = !disabled && trimmedUrl !== '' && validationMessage === null;
+
+  function handleChange(value: string) {
+    setUrl(value);
+
+    if (error !== null) setError(null);
+    if (success !== null) setSuccess(null);
+  }
 
   async function handleSubmit() {
-    const trimmed = url.trim();
-    if (!trimmed) {
+    if (trimmedUrl === '') {
       setSuccess(null);
       setError('Please enter a URL to shorten.');
       return;
     }
 
+    if (validationMessage !== null) return;
+
     setSubmitting(true);
     setError(null);
     setSuccess(null);
     try {
-      const result = await createShortUrl(trimmed);
-      console.log(result);
+      const result = await createShortUrl(trimmedUrl);
       if (result.ok) {
         setSuccess({ alias: '', shortURL: result.shortURL });
       } else if ('retryAfterSeconds' in result) {
@@ -68,7 +81,8 @@ export default function UrlCreator() {
           <Input
             placeholder="https://example.com/some/long/path"
             value={url}
-            onChange={(event) => setUrl(event.target.value)}
+            status={validationMessage !== null ? 'error' : undefined}
+            onChange={(event) => handleChange(event.target.value)}
             onPressEnter={() => void handleSubmit()}
             disabled={disabled}
             allowClear
@@ -77,11 +91,17 @@ export default function UrlCreator() {
             type="primary"
             onClick={() => void handleSubmit()}
             loading={submitting}
-            disabled={disabled}
+            disabled={!canSubmit}
           >
             Shorten
           </Button>
         </Space.Compact>
+
+        {validationMessage !== null && (
+          <Typography.Text type="danger" role="alert">
+            {validationMessage}
+          </Typography.Text>
+        )}
 
         {rateLimitUntil !== null && (
           <Alert
