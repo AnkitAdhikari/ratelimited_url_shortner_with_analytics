@@ -43,7 +43,7 @@ export async function createShortUrl(url: string): Promise<CreateResult> {
     return { ok: false, status: 429, retryAfterSeconds };
   }
 
-  const error = String(body.error ?? 'Request failed');
+  const error = String(body.message ?? 'Request failed');
   return { ok: false, status: response.status, error };
 }
 
