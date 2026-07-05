@@ -2,6 +2,7 @@ import { Layout, Tabs, Typography } from 'antd';
 
 import UrlCreator from './features/creator/UrlCreator';
 import { GREPSR_BRAND_COLOR } from './constants';
+import Dashboard from './features/dashboard/Dashboard';
 
 const { Header, Content } = Layout;
 
@@ -21,7 +22,7 @@ export default function App() {
           defaultActiveKey="create"
           items={[
             { key: 'create', label: 'Shorten', children: <UrlCreator /> },
-            // dashboard here later
+            { key: 'dashboard', label: 'Dashboard', children: <Dashboard /> },
           ]}
         />
       </Content>

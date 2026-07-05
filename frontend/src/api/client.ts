@@ -1,5 +1,23 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
 
+export interface DailyCount {
+  day: string;
+  count: number;
+}
+
+export interface UrlSummary {
+  alias: string;
+  longURL: string;
+  totalClicks: number;
+  createdAt: string;
+}
+
+export interface Analytics {
+  alias: string;
+  targetUrl: string;
+  series: DailyCount[];
+}
+
 export type CreateResult =
   | { ok: true; alias: string; shortURL: string }
   | { ok: false; status: 429; retryAfterSeconds: number }
@@ -27,4 +45,21 @@ export async function createShortUrl(url: string): Promise<CreateResult> {
 
   const error = String(body.error ?? 'Request failed');
   return { ok: false, status: response.status, error };
+}
+
+export async function listUrls(): Promise<UrlSummary[]> {
+  const response = await fetch(`${API_BASE_URL}/api/urls`);
+  if (!response.ok) {
+    throw new Error(`Failed to list URLs (status ${response.status})`);
+  }
+  const body = await response.json();
+  return (body.urls || []) as UrlSummary[];
+}
+
+export async function getAnalytics(alias: string): Promise<Analytics> {
+  const response = await fetch(`${API_BASE_URL}/api/urls/${alias.trim()}/analytics`);
+  if (!response.ok) {
+    throw new Error(`Failed to load analytics (status ${response.status})`);
+  }
+  return (await response.json()) as Analytics;
 }
