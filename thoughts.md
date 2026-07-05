@@ -58,3 +58,10 @@ Typescript based express and react fullstack app for url shortner which implemen
 - designed swapable stragey for later using other algorithms
 - extensible with cache stategy with redis later to fight against slowness of disk access
 - currently implemets store using java script Map
+
+## frontend implementation
+
+- setup vite, react typescript project
+- using fetch api rather than any libary as it doesn't have large code base of tag and tag invalidation and config would just boiler plate than actual usuage
+- add blocker for rate limitation
+- researched grepsr brand and its implementation

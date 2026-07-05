@@ -1,6 +1,7 @@
 import express from 'express';
 import pino from 'pino';
 import { pinoHttp } from 'pino-http';
+import cors from 'cors';
 
 import { Click, Url } from './db/models/index.js';
 import { env, sequelize } from './db/client.js';
@@ -17,6 +18,8 @@ const app = express();
 
 const logger = pino({ base: null });
 
+// allow all cross-origin requests
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(
   pinoHttp({
@@ -53,7 +56,7 @@ app.get('/live', (req, res) => {
   });
 });
 
-app.post('/api/url', rateLimit, validateQuery(urlSchema), async (req, res) => {
+app.post('/api/urls', rateLimit, validateQuery(urlSchema), async (req, res) => {
   const { longURL } = req.query;
 
   try {
@@ -85,7 +88,7 @@ app.post('/api/url', rateLimit, validateQuery(urlSchema), async (req, res) => {
   }
 });
 
-app.get('/api/url/:alias/analytics', validateParams(aliasSchema), async (req, res) => {
+app.get('/api/urls/:alias/analytics', validateParams(aliasSchema), async (req, res) => {
   const { alias } = req.params;
 
   const url = await Url.findOne({ where: { alias } });
@@ -106,7 +109,7 @@ app.get('/api/analytics/overview', async (req, res) => {
   }
 });
 
-app.get('/api/:alias', async (req, res) => {
+app.get('/:alias', async (req, res) => {
   const { alias } = req.params;
 
   try {
