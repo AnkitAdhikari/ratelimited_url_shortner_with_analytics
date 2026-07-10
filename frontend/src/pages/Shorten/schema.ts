@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { BACKEND_BASE_URL } from '@/constants';
+
 export const urlSchema = z.url({ protocol: /^https?$/ });
 
 const INVALID_URL_MESSAGE = 'Enter a valid URL including the protocol, e.g. https://example.com';
@@ -17,7 +19,7 @@ function hostOf(value: string | undefined | null): string | null {
 const OWN_HOSTS = new Set(
   [
     typeof window === 'undefined' ? null : window.location.host.toLowerCase(),
-    hostOf(import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000'),
+    hostOf(BACKEND_BASE_URL),
   ].filter((host): host is string => host !== null),
 );
 

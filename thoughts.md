@@ -80,7 +80,7 @@ Typescript based express and react fullstack app for url shortner which implemen
 
 - [x] Fix the hr=fr query param issue by sending longUrl in body
 - ~~Handling https:// for UX improvements~~ (decided against: protocol is the user's explicit choice; validation still requires http/https)
-- Transform code base to use RTK and RTKQuery
+- [x] Transform code base to use RTK and RTKQuery (folder structure from previous project: redux/store+services+feature, routes, layout, types)
 - light and darkmode
 - Responsiveness
 - Toast
@@ -88,4 +88,4 @@ Typescript based express and react fullstack app for url shortner which implemen
 - include lottie micro-interations
 - sheetjs exports
 - OG image and SEO optimization
-- Add error boundry
+- [x] Add error boundry

@@ -1,46 +1,34 @@
 import { ReloadOutlined } from '@ant-design/icons';
+import { skipToken } from '@reduxjs/toolkit/query';
 import { Alert, Button, Card, Empty, Space } from 'antd';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { listUrls, type UrlSummary } from '../../api/client';
+import { useGetAliasAnalyticsQuery, useGetUrlsQuery } from '@/redux/services/urls';
 import ClicksChart from './ClicksChart';
 import UrlList from './UrlList';
-import { useAnalytics } from './useAnalytics';
 
 const PANEL_HEIGHT = 320;
 
 export default function Dashboard() {
-  const [urls, setUrls] = useState<UrlSummary[]>([]);
-  const [urlsLoading, setUrlsLoading] = useState(false);
-  const [urlsError, setUrlsError] = useState<string | null>(null);
   const [selectedAlias, setSelectedAlias] = useState<string | null>(null);
 
-  const loadUrls = useCallback(async () => {
-    setUrlsLoading(true);
-    setUrlsError(null);
-    try {
-      setUrls(await listUrls());
-    } catch {
-      setUrlsError('Could not load the URL list.');
-    } finally {
-      setUrlsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadUrls();
-  }, [loadUrls]);
+  const {
+    data: urls = [],
+    isFetching: urlsLoading,
+    isError: urlsError,
+    refetch: refetchUrls,
+  } = useGetUrlsQuery();
 
   const {
-    series,
-    loading: analyticsLoading,
-    error: analyticsError,
-    refresh,
-  } = useAnalytics(selectedAlias);
+    data: analytics,
+    isFetching: analyticsLoading,
+    isError: analyticsError,
+    refetch: refetchAnalytics,
+  } = useGetAliasAnalyticsQuery(selectedAlias ?? skipToken);
 
   function handleRefresh() {
-    void loadUrls();
-    refresh();
+    void refetchUrls();
+    if (selectedAlias !== null) void refetchAnalytics();
   }
 
   return (
@@ -53,13 +41,13 @@ export default function Dashboard() {
           </Button>
         }
       >
-        {urlsError !== null ? (
+        {urlsError ? (
           <Alert
             type="error"
             showIcon
-            title={urlsError}
+            title="Could not load the URL list."
             action={
-              <Button size="small" onClick={() => void loadUrls()}>
+              <Button size="small" onClick={() => void refetchUrls()}>
                 Retry
               </Button>
             }
@@ -79,19 +67,19 @@ export default function Dashboard() {
           <div style={{ height: PANEL_HEIGHT, display: 'grid', placeItems: 'center' }}>
             <Empty description="Select a URL to see its click history" />
           </div>
-        ) : analyticsError !== null ? (
+        ) : analyticsError ? (
           <Alert
             type="error"
             showIcon
-            title={analyticsError}
+            title="Could not load analytics for this URL."
             action={
-              <Button size="small" onClick={refresh}>
+              <Button size="small" onClick={() => void refetchAnalytics()}>
                 Retry
               </Button>
             }
           />
         ) : (
-          <ClicksChart series={series} loading={analyticsLoading} />
+          <ClicksChart series={analytics?.series ?? []} loading={analyticsLoading} />
         )}
       </Card>
     </Space>

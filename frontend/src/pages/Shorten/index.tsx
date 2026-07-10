@@ -1,22 +1,42 @@
 import { Alert, Button, Card, Input, Space, Typography } from 'antd';
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { useEffect, useState } from 'react';
 
-import { createShortUrl } from '../../api/client';
+import { rateLimitCleared, selectRateLimitUntil } from '@/redux/feature/rateLimitSlice';
+import { useCreateShortUrlMutation } from '@/redux/services/urls';
+import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { remainingSeconds } from './countdown';
-import { getUrlError } from './urlSchema';
+import { getUrlError } from './schema';
 
-interface SuccessState {
-  alias: string;
-  shortURL: string;
+function describeError(
+  error: FetchBaseQueryError | { message?: string } | undefined,
+): string | null {
+  if (error === undefined) return null;
+
+  if ('status' in error) {
+    if (error.status === 429) return null;
+    if (error.status === 'FETCH_ERROR') {
+      return 'Could not reach the server. Check your connection and try again.';
+    }
+    if (typeof error.data === 'object' && error.data !== null) {
+      const body = error.data as { message?: unknown; error?: unknown };
+      const message = body.message ?? body.error;
+      if (typeof message === 'string') return message;
+    }
+    return 'Request failed';
+  }
+
+  return error.message ?? 'Request failed';
 }
 
-export default function UrlCreator() {
+export default function Shorten() {
   const [url, setUrl] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState<SuccessState | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  const [rateLimitUntil, setRateLimitUntil] = useState<number | null>(null);
+  const [createShortUrl, { data: created, error, isLoading, reset }] = useCreateShortUrlMutation();
+
+  const dispatch = useAppDispatch();
+  const rateLimitUntil = useAppSelector(selectRateLimitUntil);
   const [secondsLeft, setSecondsLeft] = useState(0);
 
   useEffect(() => {
@@ -26,51 +46,42 @@ export default function UrlCreator() {
       const remaining = remainingSeconds(rateLimitUntil, Date.now());
       setSecondsLeft(remaining);
       if (remaining <= 0) {
-        setRateLimitUntil(null);
+        dispatch(rateLimitCleared());
       }
     }, 1000);
     return () => clearInterval(id);
-  }, [rateLimitUntil]);
+  }, [rateLimitUntil, dispatch]);
 
   const trimmedUrl = url.trim();
 
   const validationMessage = trimmedUrl === '' ? null : getUrlError(trimmedUrl);
 
-  const disabled = submitting || rateLimitUntil !== null;
+  const disabled = isLoading || rateLimitUntil !== null;
   const canSubmit = !disabled && trimmedUrl !== '' && validationMessage === null;
+
+  const apiError = describeError(error);
+  const errorMessage = formError ?? apiError;
 
   function handleChange(value: string) {
     setUrl(value);
 
-    if (error !== null) setError(null);
-    if (success !== null) setSuccess(null);
+    if (formError !== null) setFormError(null);
+    if (created !== undefined || error !== undefined) reset();
   }
 
   async function handleSubmit() {
     if (trimmedUrl === '') {
-      setSuccess(null);
-      setError('Please enter a URL to shorten.');
+      setFormError('Please enter a URL to shorten.');
       return;
     }
 
     if (validationMessage !== null) return;
 
-    setSubmitting(true);
-    setError(null);
-    setSuccess(null);
+    setFormError(null);
     try {
-      const result = await createShortUrl(trimmedUrl);
-      if (result.ok) {
-        setSuccess({ alias: '', shortURL: result.shortURL });
-      } else if ('retryAfterSeconds' in result) {
-        setRateLimitUntil(Date.now() + result.retryAfterSeconds * 1000);
-      } else {
-        setError(result.error);
-      }
+      await createShortUrl(trimmedUrl).unwrap();
     } catch {
-      setError('Could not reach the server. Check your connection and try again.');
-    } finally {
-      setSubmitting(false);
+      // surfaced through the mutation's error state and the rateLimit slice
     }
   }
 
@@ -90,7 +101,7 @@ export default function UrlCreator() {
           <Button
             type="primary"
             onClick={() => void handleSubmit()}
-            loading={submitting}
+            loading={isLoading}
             disabled={!canSubmit}
           >
             Shorten
@@ -112,19 +123,28 @@ export default function UrlCreator() {
           />
         )}
 
-        {rateLimitUntil === null && error !== null && (
-          <Alert type="error" showIcon closable message={error} onClose={() => setError(null)} />
+        {rateLimitUntil === null && errorMessage !== null && (
+          <Alert
+            type="error"
+            showIcon
+            closable
+            message={errorMessage}
+            onClose={() => {
+              setFormError(null);
+              reset();
+            }}
+          />
         )}
 
-        {rateLimitUntil === null && success !== null && (
+        {rateLimitUntil === null && created !== undefined && (
           <Alert
             type="success"
             showIcon
             message="Short URL created"
             description={
-              <Typography.Text copyable={{ text: success.shortURL }}>
-                <a href={success.shortURL} target="_blank" rel="noreferrer">
-                  {success.shortURL}
+              <Typography.Text copyable={{ text: created.shortURL }}>
+                <a href={created.shortURL} target="_blank" rel="noreferrer">
+                  {created.shortURL}
                 </a>
               </Typography.Text>
             }

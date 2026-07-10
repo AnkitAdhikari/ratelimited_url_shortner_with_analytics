@@ -1,6 +1,6 @@
 import { Table, type TableColumnsType, Tooltip, Typography } from 'antd';
 
-import type { UrlSummary } from '../../api/client';
+import type { UrlSummary } from '@/types/urlTypes';
 
 interface Props {
   urls: UrlSummary[];
