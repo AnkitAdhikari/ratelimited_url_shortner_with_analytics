@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { env } from '../db/client.js';
-import { validateParams, validateQuery } from '../validations/index.js';
+import { validateParams, validateRequestBody } from '../validations/index.js';
 import { aliasSchema, urlSchema } from '../validations/urlSchema.js';
 import { createRateLimit } from '../middleware/rateLimit.middleware.js';
 import { FixedWindowLimiter } from '../ratelimit/fixedWindow.js';
@@ -62,7 +62,7 @@ const rateLimit = createRateLimit(
  *       500:
  *         description: Internal server error.
  */
-urlRouter.post('/', rateLimit, validateQuery(urlSchema), createShortUrl);
+urlRouter.post('/', rateLimit, validateRequestBody(urlSchema), createShortUrl);
 
 /**
  * @openapi

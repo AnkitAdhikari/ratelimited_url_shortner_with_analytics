@@ -70,3 +70,22 @@ Typescript based express and react fullstack app for url shortner which implemen
 
 - routes were already cluttered on server file
 - [x] need to refator to thier own folder to keep server file lean
+
+## Re-assesment - focusing on frontend
+
+- should i send reassesment to look visually apelling
+- or should i use state management library to to showcase the competence withit
+
+### Some changes todo:
+
+- [x] Fix the hr=fr query param issue by sending longUrl in body
+- Handling https:// for UX improvements
+- Transform code base to use RTK and RTKQuery
+- light and darkmode
+- Responsiveness
+- Toast
+- Gamified feedback on rate limitations
+- include lottie micro-interations
+- sheetjs exports
+- OG image and SEO optimization
+- Add error boundry

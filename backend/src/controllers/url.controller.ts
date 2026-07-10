@@ -7,7 +7,7 @@ import { toBase62 } from '../utils/base62.js';
 import { InternalServerError } from '../utils/errors/app.errors.js';
 
 export async function createShortUrl(req: Request, res: Response) {
-  const { longURL } = req.query;
+  const { longURL } = req.body;
 
   try {
     const existingUrl = await Url.findOne({ where: { longURL } });

@@ -24,9 +24,10 @@ export type CreateResult =
   | { ok: false; status: number; error: string };
 
 export async function createShortUrl(url: string): Promise<CreateResult> {
-  const response = await fetch(`${API_BASE_URL}/api/urls?longURL=${url}`, {
+  const response = await fetch(`${API_BASE_URL}/api/urls`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ longURL: url }),
   });
 
   const body = (await response.json().catch(() => ({}))) as Record<string, unknown>;
