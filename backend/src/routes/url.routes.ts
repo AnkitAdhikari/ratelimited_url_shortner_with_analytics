@@ -29,15 +29,19 @@ const rateLimit = createRateLimit(
  *       Creates a short alias for the given long URL. Idempotent — if the long
  *       URL already exists, the existing alias is returned with `200`. This
  *       endpoint is rate limited per client (fixed-window).
- *     parameters:
- *       - in: query
- *         name: longURL
- *         required: true
- *         schema:
- *           type: string
- *           format: uri
- *         description: The destination URL to shorten.
- *         example: https://example.com/some/very/long/path
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [longURL]
+ *             properties:
+ *               longURL:
+ *                 type: string
+ *                 format: uri
+ *                 description: The destination URL to shorten.
+ *                 example: https://example.com/some/very/long/path
  *     responses:
  *       200:
  *         description: An existing short URL was returned.
@@ -52,7 +56,7 @@ const rateLimit = createRateLimit(
  *             schema:
  *               $ref: '#/components/schemas/ShortUrl'
  *       400:
- *         description: Invalid or missing `longURL` query parameter.
+ *         description: Invalid or missing `longURL` in the request body.
  *         content:
  *           application/json:
  *             schema:

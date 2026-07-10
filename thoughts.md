@@ -79,7 +79,7 @@ Typescript based express and react fullstack app for url shortner which implemen
 ### Some changes todo:
 
 - [x] Fix the hr=fr query param issue by sending longUrl in body
-- Handling https:// for UX improvements
+- ~~Handling https:// for UX improvements~~ (decided against: protocol is the user's explicit choice; validation still requires http/https)
 - Transform code base to use RTK and RTKQuery
 - light and darkmode
 - Responsiveness

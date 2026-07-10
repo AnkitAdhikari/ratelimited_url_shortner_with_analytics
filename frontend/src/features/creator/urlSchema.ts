@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-export const urlSchema = z.url();
+export const urlSchema = z.url({ protocol: /^https?$/ });
 
-const INVALID_URL_MESSAGE = 'Enter a valid URL, e.g. https://example.com';
+const INVALID_URL_MESSAGE = 'Enter a valid URL including the protocol, e.g. https://example.com';
 const SELF_URL_MESSAGE = 'You cannot shorten a link that points back to this site.';
 
 function hostOf(value: string | undefined | null): string | null {
