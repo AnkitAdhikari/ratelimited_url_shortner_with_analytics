@@ -1,0 +1,35 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background-color: var(--brand);
+  padding-inline: clamp(1rem, 4vw, 3.125rem);
+}
+
+.header .title {
+  color: #fff;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.header .menu {
+  background-color: transparent;
+  flex: 1;
+  min-width: 0;
+}
+
+/* pages own their width: the hero bleeds full-width, the dashboard centers itself */
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 36rem) {
+  .header {
+    gap: 0.75rem;
+  }
+
+  .header .title {
+    font-size: 1.125rem;
+  }
+}

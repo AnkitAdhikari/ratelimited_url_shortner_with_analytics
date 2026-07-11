@@ -82,7 +82,7 @@ Typescript based express and react fullstack app for url shortner which implemen
 - ~~Handling https:// for UX improvements~~ (decided against: protocol is the user's explicit choice; validation still requires http/https)
 - [x] Transform code base to use RTK and RTKQuery (folder structure from previous project: redux/store+services+feature, routes, layout, types)
 - [x] light and darkmode
-- Responsiveness
+- [x] Responsiveness (CSS Modules migration with rem units + media queries: header breakpoint, hero clamp, table scroll on mobile, dashboard padding)
 - Toast
 - Gamified feedback on rate limitations
 - include lottie micro-interations

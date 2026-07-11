@@ -2,10 +2,10 @@ import { MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { Layout as AntLayout, Menu, Switch, Typography } from 'antd';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
-import { GREPSR_BRAND_COLOR } from '@/constants';
 import { selectThemeMode, themeToggled } from '@/redux/feature/themeSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { DASHBOARD_ROUTE, HOME_ROUTE } from '@/routes/routeNames';
+import styles from './layout.module.css';
 
 const { Header, Content } = AntLayout;
 
@@ -23,15 +23,8 @@ export default function Layout() {
 
   return (
     <AntLayout style={{ minHeight: '100vh' }}>
-      <Header
-        style={{
-          backgroundColor: GREPSR_BRAND_COLOR,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 24,
-        }}
-      >
-        <Typography.Title level={3} style={{ color: '#fff', margin: 0 }}>
+      <Header className={styles.header}>
+        <Typography.Title level={3} className={styles.title}>
           URL Shortener
         </Typography.Title>
         <Menu
@@ -39,7 +32,7 @@ export default function Layout() {
           mode="horizontal"
           selectedKeys={[selectedKey]}
           items={menuItems}
-          style={{ backgroundColor: 'transparent', flex: 1, minWidth: 0 }}
+          className={styles.menu}
         />
         <Switch
           checked={themeMode === 'dark'}
@@ -49,7 +42,7 @@ export default function Layout() {
           aria-label="Toggle dark mode"
         />
       </Header>
-      <Content style={{ width: '100%', maxWidth: 960, margin: '0 auto', padding: 24 }}>
+      <Content className={styles.content}>
         <Outlet />
       </Content>
     </AntLayout>

@@ -1,12 +1,15 @@
 import { Alert, Button, Card, Input, Space, Typography } from 'antd';
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { rateLimitCleared, selectRateLimitUntil } from '@/redux/feature/rateLimitSlice';
 import { useCreateShortUrlMutation } from '@/redux/services/urls';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
+import { DASHBOARD_ROUTE } from '@/routes/routeNames';
 import { remainingSeconds } from './countdown';
 import { getUrlError } from './schema';
+import styles from './shorten.module.css';
 
 function describeError(
   error: FetchBaseQueryError | { message?: string } | undefined,
@@ -86,71 +89,86 @@ export default function Shorten() {
   }
 
   return (
-    <Card title="Shorten a URL">
-      <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-        <Space.Compact style={{ width: '100%' }}>
-          <Input
-            placeholder="https://example.com/some/long/path"
-            value={url}
-            status={validationMessage !== null ? 'error' : undefined}
-            onChange={(event) => handleChange(event.target.value)}
-            onPressEnter={() => void handleSubmit()}
-            disabled={disabled}
-            allowClear
-          />
-          <Button
-            type="primary"
-            onClick={() => void handleSubmit()}
-            loading={isLoading}
-            disabled={!canSubmit}
-          >
-            Shorten
-          </Button>
-        </Space.Compact>
+    <section className={styles.hero}>
+      <Typography.Title level={1} className={styles.headline}>
+        Shorten long links. Track every click.
+      </Typography.Title>
 
-        {validationMessage !== null && (
-          <Typography.Text type="danger" role="alert">
-            {validationMessage}
-          </Typography.Text>
-        )}
+      <Typography.Paragraph type="secondary" className={styles.subtitle}>
+        Paste a URL and get a short 6-character alias. Every visit is recorded, so you can watch
+        clicks build up on the dashboard.
+      </Typography.Paragraph>
 
-        {rateLimitUntil !== null && (
-          <Alert
-            type="warning"
-            showIcon
-            message="Rate limit reached"
-            description={`Too many requests. You can try again in ${secondsLeft}s.`}
-          />
-        )}
+      <Card className={styles.card}>
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Space.Compact style={{ width: '100%' }} size="large">
+            <Input
+              placeholder="https://example.com/some/long/path"
+              value={url}
+              status={validationMessage !== null ? 'error' : undefined}
+              onChange={(event) => handleChange(event.target.value)}
+              onPressEnter={() => void handleSubmit()}
+              disabled={disabled}
+              allowClear
+            />
+            <Button
+              type="primary"
+              onClick={() => void handleSubmit()}
+              loading={isLoading}
+              disabled={!canSubmit}
+            >
+              Shorten
+            </Button>
+          </Space.Compact>
 
-        {rateLimitUntil === null && errorMessage !== null && (
-          <Alert
-            type="error"
-            showIcon
-            closable
-            message={errorMessage}
-            onClose={() => {
-              setFormError(null);
-              reset();
-            }}
-          />
-        )}
+          {validationMessage !== null && (
+            <Typography.Text type="danger" role="alert">
+              {validationMessage}
+            </Typography.Text>
+          )}
 
-        {rateLimitUntil === null && created !== undefined && (
-          <Alert
-            type="success"
-            showIcon
-            message="Short URL created"
-            description={
-              <Typography.Text copyable={{ text: created.shortURL }}>
-                <a href={created.shortURL} target="_blank" rel="noreferrer">
-                  {created.shortURL}
-                </a>
-              </Typography.Text>
-            }
-          />
-        )}
-      </Space>
-    </Card>
+          {rateLimitUntil !== null && (
+            <Alert
+              type="warning"
+              showIcon
+              message="Rate limit reached"
+              description={`Too many requests. You can try again in ${secondsLeft}s.`}
+            />
+          )}
+
+          {rateLimitUntil === null && errorMessage !== null && (
+            <Alert
+              type="error"
+              showIcon
+              closable
+              message={errorMessage}
+              onClose={() => {
+                setFormError(null);
+                reset();
+              }}
+            />
+          )}
+
+          {rateLimitUntil === null && created !== undefined && (
+            <Alert
+              type="success"
+              showIcon
+              message="Short URL created"
+              description={
+                <Typography.Text copyable={{ text: created.shortURL }}>
+                  <a href={created.shortURL} target="_blank" rel="noreferrer">
+                    {created.shortURL}
+                  </a>
+                </Typography.Text>
+              }
+            />
+          )}
+        </Space>
+      </Card>
+
+      <Typography.Text type="secondary">
+        Already shortened something? <Link to={DASHBOARD_ROUTE}>View analytics</Link>
+      </Typography.Text>
+    </section>
   );
 }

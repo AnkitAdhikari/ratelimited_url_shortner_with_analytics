@@ -21,7 +21,8 @@ export default function UrlList({ urls, loading, selectedAlias, onSelect }: Prop
     {
       title: 'Target URL',
       dataIndex: 'longURL',
-      ellipsis: true,
+      // truncate in place; the Tooltip shows the full URL (showTitle off avoids a double tooltip)
+      ellipsis: { showTitle: false },
       render: (longURL: string) => (
         <Tooltip title={longURL}>
           <a
@@ -46,6 +47,7 @@ export default function UrlList({ urls, loading, selectedAlias, onSelect }: Prop
       title: 'Created',
       dataIndex: 'createdAt',
       width: 190,
+      responsive: ['sm'],
       render: (createdAt: string) => new Date(createdAt).toLocaleString(),
     },
   ];

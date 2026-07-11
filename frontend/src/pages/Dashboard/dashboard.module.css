@@ -1,0 +1,22 @@
+.container {
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.centerBox {
+  height: 20rem;
+  display: grid;
+  place-items: center;
+}
+
+.chartBox {
+  height: 20rem;
+}
+
+@media (max-width: 36rem) {
+  .container {
+    padding: 1rem 0.75rem;
+  }
+}

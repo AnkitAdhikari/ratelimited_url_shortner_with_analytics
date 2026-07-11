@@ -12,10 +12,9 @@ import {
 import { Line } from 'react-chartjs-2';
 
 import type { DailyCount } from '@/types/urlTypes';
+import styles from './dashboard.module.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler);
-
-const CHART_HEIGHT = 320;
 
 interface Props {
   series: DailyCount[];
@@ -28,7 +27,7 @@ export default function ClicksChart({ series, loading }: Props) {
 
   if (loading) {
     return (
-      <div style={{ height: CHART_HEIGHT, display: 'grid', placeItems: 'center' }}>
+      <div className={styles.centerBox}>
         <Spin />
       </div>
     );
@@ -36,7 +35,7 @@ export default function ClicksChart({ series, loading }: Props) {
 
   if (series.length === 0) {
     return (
-      <div style={{ height: CHART_HEIGHT, display: 'grid', placeItems: 'center' }}>
+      <div className={styles.centerBox}>
         <Empty description="No click data" />
       </div>
     );
@@ -75,7 +74,7 @@ export default function ClicksChart({ series, loading }: Props) {
   };
 
   return (
-    <div style={{ height: CHART_HEIGHT }}>
+    <div className={styles.chartBox}>
       <Line
         data={data}
         options={options}
