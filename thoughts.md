@@ -86,6 +86,6 @@ Typescript based express and react fullstack app for url shortner which implemen
 - [x] Toast implementation on refresh button
 - [x] include lottie micro-interations (3 downloaded animations: success check draw, rate-limit clock, cat loder)
 - [x] exports as csv, xlsx and parquet
-- fav icon, OG image and SEO optimization
+- [x] fav icon, OG image and SEO optimization
 - table reorder animation would look nice too
 - [x] Add error boundry

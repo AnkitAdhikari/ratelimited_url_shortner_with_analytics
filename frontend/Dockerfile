@@ -13,7 +13,9 @@ RUN pnpm install --frozen-lockfile
 COPY frontend/ frontend/
 
 ARG VITE_API_BASE_URL=http://localhost:3000
+ARG VITE_SITE_URL=http://localhost
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_SITE_URL=$VITE_SITE_URL
 RUN pnpm --filter @rlus/frontend build
 
 

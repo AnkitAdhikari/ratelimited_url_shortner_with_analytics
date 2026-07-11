@@ -44,6 +44,7 @@ services:
       args:
         # baked in at build; same origin as the site so no CORS
         VITE_API_BASE_URL: https://${SITE_ADDRESS}
+        VITE_SITE_URL: https://${SITE_ADDRESS}
     depends_on:
       - backend
     restart: unless-stopped
