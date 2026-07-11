@@ -1,14 +1,28 @@
-import { ReloadOutlined } from '@ant-design/icons';
+import { DownloadOutlined, ReloadOutlined } from '@ant-design/icons';
 import { skipToken } from '@reduxjs/toolkit/query';
-import { Alert, App, Button, Card, Empty, Space } from 'antd';
+import { Alert, App, Button, Card, Dropdown, Empty, Space } from 'antd';
 import { useState } from 'react';
 
 import loaderCat from '@/assets/lottie/loder-cat.json';
 import LottieBox from '@/components/LottieBox';
 import { useGetAliasAnalyticsQuery, useGetUrlsQuery } from '@/redux/services/urls';
+import {
+  exportClicksCsv,
+  exportClicksParquet,
+  exportClicksXlsx,
+  exportUrlsCsv,
+  exportUrlsParquet,
+  exportUrlsXlsx,
+} from '@/utils/exportData';
 import ClicksChart from './ClicksChart';
 import styles from './dashboard.module.css';
 import UrlList from './UrlList';
+
+const EXPORT_FORMATS = [
+  { key: 'csv', label: 'CSV (.csv)' },
+  { key: 'xlsx', label: 'Excel (.xlsx)' },
+  { key: 'parquet', label: 'Parquet (.parquet)' },
+];
 
 export default function Dashboard() {
   const { message } = App.useApp();
@@ -28,6 +42,39 @@ export default function Dashboard() {
     refetch: refetchAnalytics,
   } = useGetAliasAnalyticsQuery(selectedAlias ?? skipToken);
 
+  const series = analytics?.series ?? [];
+
+  async function handleExportClicks(format: string) {
+    if (selectedAlias === null) return;
+    try {
+      if (format === 'csv') {
+        exportClicksCsv(selectedAlias, series);
+      } else if (format === 'xlsx') {
+        await exportClicksXlsx(selectedAlias, series, urls);
+      } else {
+        await exportClicksParquet(selectedAlias, series);
+      }
+      void message.success(`Exported clicks as ${format.toUpperCase()}`);
+    } catch {
+      void message.error('Export failed. Try again.');
+    }
+  }
+
+  async function handleExportUrls(format: string) {
+    try {
+      if (format === 'csv') {
+        exportUrlsCsv(urls);
+      } else if (format === 'xlsx') {
+        await exportUrlsXlsx(urls);
+      } else {
+        await exportUrlsParquet(urls);
+      }
+      void message.success(`Exported URLs as ${format.toUpperCase()}`);
+    } catch {
+      void message.error('Export failed. Try again.');
+    }
+  }
+
   async function handleRefresh() {
     const jobs: Promise<unknown>[] = [refetchUrls().unwrap()];
     if (selectedAlias !== null) jobs.push(refetchAnalytics().unwrap());
@@ -46,9 +93,24 @@ export default function Dashboard() {
         <Card
           title="Your URLs"
           extra={
-            <Button icon={<ReloadOutlined />} onClick={() => void handleRefresh()} loading={urlsLoading}>
-              Refresh
-            </Button>
+            <Space>
+              <Dropdown
+                disabled={urls.length === 0}
+                menu={{
+                  items: EXPORT_FORMATS,
+                  onClick: ({ key }) => void handleExportUrls(key),
+                }}
+              >
+                <Button icon={<DownloadOutlined />}>Export</Button>
+              </Dropdown>
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={() => void handleRefresh()}
+                loading={urlsLoading}
+              >
+                Refresh
+              </Button>
+            </Space>
           }
         >
           {urlsError ? (
@@ -72,7 +134,20 @@ export default function Dashboard() {
           )}
         </Card>
 
-        <Card title="Clicks (last 7 days)">
+        <Card
+          title="Clicks (last 7 days)"
+          extra={
+            <Dropdown
+              disabled={selectedAlias === null || series.length === 0}
+              menu={{
+                items: EXPORT_FORMATS,
+                onClick: ({ key }) => void handleExportClicks(key),
+              }}
+            >
+              <Button icon={<DownloadOutlined />}>Export</Button>
+            </Dropdown>
+          }
+        >
           {selectedAlias === null ? (
             <div className={styles.centerBox}>
               <Empty
@@ -92,7 +167,7 @@ export default function Dashboard() {
               }
             />
           ) : (
-            <ClicksChart series={analytics?.series ?? []} loading={analyticsLoading} />
+            <ClicksChart series={series} loading={analyticsLoading} />
           )}
         </Card>
       </Space>

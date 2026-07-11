@@ -84,8 +84,8 @@ Typescript based express and react fullstack app for url shortner which implemen
 - [x] light and darkmode
 - [x] Responsiveness (CSS Modules migration with rem units + media queries: header breakpoint, hero clamp, table scroll on mobile, dashboard padding)
 - [x] Toast implementation on refresh button
-- Gamified feedback on rate limitations
 - [x] include lottie micro-interations (3 downloaded animations: success check draw, rate-limit clock, cat loder)
-- sheetjs exports
-- OG image and SEO optimization
+- [x] exports as csv, xlsx and parquet
+- fav icon, OG image and SEO optimization
+- table reorder animation would look nice too
 - [x] Add error boundry
