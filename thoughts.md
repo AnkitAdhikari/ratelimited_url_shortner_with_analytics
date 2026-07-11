@@ -87,5 +87,5 @@ Typescript based express and react fullstack app for url shortner which implemen
 - [x] include lottie micro-interations (3 downloaded animations: success check draw, rate-limit clock, cat loder)
 - [x] exports as csv, xlsx and parquet
 - [x] fav icon, OG image and SEO optimization
-- table reorder animation would look nice too
+- [x] table reorder animation
 - [x] Add error boundry

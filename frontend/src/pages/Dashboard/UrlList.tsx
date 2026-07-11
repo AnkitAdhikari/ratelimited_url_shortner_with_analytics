@@ -1,5 +1,6 @@
 import { Table, type TableColumnsType, Tooltip, Typography } from 'antd';
 
+import AnimatedTableRow from '@/components/AnimatedTableRow';
 import type { UrlSummary } from '@/types/urlTypes';
 
 interface Props {
@@ -58,7 +59,14 @@ export default function UrlList({ urls, loading, selectedAlias, onSelect }: Prop
       columns={columns}
       dataSource={urls}
       loading={loading}
-      pagination={{ pageSize: 5, hideOnSinglePage: true }}
+      components={{ body: { row: AnimatedTableRow } }}
+      pagination={{
+        defaultPageSize: 15,
+        hideOnSinglePage: true,
+        showSizeChanger: true,
+        pageSizeOptions: [10, 15, 25, 50],
+        showTotal: (total, range) => `${range[0]}–${range[1]} of ${total}`,
+      }}
       rowSelection={{
         type: 'radio',
         selectedRowKeys: selectedAlias === null ? [] : [selectedAlias],
