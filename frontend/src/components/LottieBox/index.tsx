@@ -1,6 +1,8 @@
 import { useLottie } from 'lottie-react';
 import { useEffect } from 'react';
 
+import { prefersReducedMotion } from '@/utils/motion';
+
 interface Props {
   animationData: object;
   loop?: boolean;
@@ -19,7 +21,7 @@ export default function LottieBox({ animationData, loop = true, size = '8rem', a
   // reduced motion: show the final frame instead of animating
   useEffect(() => {
     if (!animationLoaded) return;
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!prefersReducedMotion()) return;
 
     const frames = getDuration(true);
     if (frames !== undefined) goToAndStop(Math.max(0, frames - 1), true);

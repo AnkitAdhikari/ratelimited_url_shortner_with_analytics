@@ -89,3 +89,4 @@ Typescript based express and react fullstack app for url shortner which implemen
 - [x] fav icon, OG image and SEO optimization
 - [x] table reorder animation
 - [x] Add error boundry
+- [x] refactor and design changes

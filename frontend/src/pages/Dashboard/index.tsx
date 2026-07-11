@@ -18,11 +18,34 @@ import ClicksChart from './ClicksChart';
 import styles from './dashboard.module.css';
 import UrlList from './UrlList';
 
+type ExportFormat = 'csv' | 'xlsx' | 'parquet';
+type ExportJobs = Record<ExportFormat, () => void | Promise<void>>;
+
 const EXPORT_FORMATS = [
   { key: 'csv', label: 'CSV (.csv)' },
   { key: 'xlsx', label: 'Excel (.xlsx)' },
   { key: 'parquet', label: 'Parquet (.parquet)' },
 ];
+
+function ExportDropdown({
+  disabled,
+  onExport,
+}: {
+  disabled: boolean;
+  onExport: (format: ExportFormat) => void;
+}) {
+  return (
+    <Dropdown
+      disabled={disabled}
+      menu={{
+        items: EXPORT_FORMATS,
+        onClick: ({ key }) => onExport(key as ExportFormat),
+      }}
+    >
+      <Button icon={<DownloadOutlined />}>export</Button>
+    </Dropdown>
+  );
+}
 
 export default function Dashboard() {
   const { message } = App.useApp();
@@ -44,35 +67,30 @@ export default function Dashboard() {
 
   const series = analytics?.series ?? [];
 
-  async function handleExportClicks(format: string) {
-    if (selectedAlias === null) return;
+  async function runExport(scope: string, format: ExportFormat, jobs: ExportJobs) {
     try {
-      if (format === 'csv') {
-        exportClicksCsv(selectedAlias, series);
-      } else if (format === 'xlsx') {
-        await exportClicksXlsx(selectedAlias, series, urls);
-      } else {
-        await exportClicksParquet(selectedAlias, series);
-      }
-      void message.success(`Exported clicks as ${format.toUpperCase()}`);
+      await jobs[format]();
+      void message.success(`Exported ${scope} as ${format.toUpperCase()}`);
     } catch {
       void message.error('Export failed. Try again.');
     }
   }
 
-  async function handleExportUrls(format: string) {
-    try {
-      if (format === 'csv') {
-        exportUrlsCsv(urls);
-      } else if (format === 'xlsx') {
-        await exportUrlsXlsx(urls);
-      } else {
-        await exportUrlsParquet(urls);
-      }
-      void message.success(`Exported URLs as ${format.toUpperCase()}`);
-    } catch {
-      void message.error('Export failed. Try again.');
-    }
+  function handleExportClicks(format: ExportFormat) {
+    if (selectedAlias === null) return;
+    void runExport('clicks', format, {
+      csv: () => exportClicksCsv(selectedAlias, series),
+      xlsx: () => exportClicksXlsx(selectedAlias, series, urls),
+      parquet: () => exportClicksParquet(selectedAlias, series),
+    });
+  }
+
+  function handleExportUrls(format: ExportFormat) {
+    void runExport('URLs', format, {
+      csv: () => exportUrlsCsv(urls),
+      xlsx: () => exportUrlsXlsx(urls),
+      parquet: () => exportUrlsParquet(urls),
+    });
   }
 
   async function handleRefresh() {
@@ -94,21 +112,13 @@ export default function Dashboard() {
           title="Your URLs"
           extra={
             <Space>
-              <Dropdown
-                disabled={urls.length === 0}
-                menu={{
-                  items: EXPORT_FORMATS,
-                  onClick: ({ key }) => void handleExportUrls(key),
-                }}
-              >
-                <Button icon={<DownloadOutlined />}>Export</Button>
-              </Dropdown>
+              <ExportDropdown disabled={urls.length === 0} onExport={handleExportUrls} />
               <Button
                 icon={<ReloadOutlined />}
                 onClick={() => void handleRefresh()}
                 loading={urlsLoading}
               >
-                Refresh
+                refresh
               </Button>
             </Space>
           }
@@ -137,15 +147,10 @@ export default function Dashboard() {
         <Card
           title="Clicks (last 7 days)"
           extra={
-            <Dropdown
+            <ExportDropdown
               disabled={selectedAlias === null || series.length === 0}
-              menu={{
-                items: EXPORT_FORMATS,
-                onClick: ({ key }) => void handleExportClicks(key),
-              }}
-            >
-              <Button icon={<DownloadOutlined />}>Export</Button>
-            </Dropdown>
+              onExport={handleExportClicks}
+            />
           }
         >
           {selectedAlias === null ? (

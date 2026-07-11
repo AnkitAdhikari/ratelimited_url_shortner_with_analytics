@@ -1,21 +1,87 @@
+/* the header is deliberately dark in both themes; its fixed palette lives here */
 .header {
+  --header-border: #1c222e;
+  --header-fg: #e7edf5;
+  --header-fg-muted: #8b96a8;
+  --header-fg-hover: #c6ceda;
+
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1.5rem;
-  background-color: var(--brand);
-  padding-inline: clamp(1rem, 4vw, 3.125rem);
+  padding-inline: clamp(1rem, 4vw, 2rem);
+  border-bottom: 1px solid var(--header-border);
 }
 
-.header .title {
-  color: #fff;
-  margin: 0;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  min-width: 0;
+}
+
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.logoMark {
+  color: var(--ant-color-primary);
+  background: color-mix(in srgb, var(--ant-color-primary) 12%, transparent);
+  font-weight: 800;
+  font-size: 1.125rem;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+}
+
+.wordmark {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--header-fg);
   white-space: nowrap;
 }
 
-.header .menu {
-  background-color: transparent;
-  flex: 1;
-  min-width: 0;
+.wordmark .accent {
+  color: var(--ant-color-primary);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.4;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.5rem 1rem;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--header-fg-muted);
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.tab:hover {
+  color: var(--header-fg-hover);
+}
+
+.tabActive {
+  composes: tab;
+  color: var(--ant-color-primary);
+  background: color-mix(in srgb, var(--ant-color-primary) 14%, transparent);
+  border-color: color-mix(in srgb, var(--ant-color-primary) 35%, transparent);
 }
 
 .content {
@@ -24,11 +90,11 @@
 }
 
 @media (max-width: 36rem) {
-  .header {
+  .brand {
     gap: 0.75rem;
   }
 
-  .header .title {
-    font-size: 1.125rem;
+  .wordmark {
+    display: none;
   }
 }

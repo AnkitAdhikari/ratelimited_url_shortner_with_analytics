@@ -1,4 +1,5 @@
 import { Empty, theme } from 'antd';
+import { useMemo } from 'react';
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -26,6 +27,44 @@ interface Props {
 export default function ClicksChart({ series, loading }: Props) {
   const { token } = theme.useToken();
 
+  const options: ChartOptions<'line'> = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          ticks: { color: token.colorTextSecondary },
+          grid: { color: token.colorSplit },
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0, color: token.colorTextSecondary },
+          grid: { color: token.colorSplit },
+        },
+      },
+    }),
+    [token],
+  );
+
+  const data = useMemo(
+    () => ({
+      labels: series.map((point) => point.day),
+      datasets: [
+        {
+          label: 'Clicks',
+          data: series.map((point) => point.count),
+          borderColor: token.colorPrimary,
+          backgroundColor: token.colorPrimaryBg,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3,
+        },
+      ],
+    }),
+    [series, token],
+  );
+
   if (loading) {
     return (
       <div className={styles.centerBox}>
@@ -41,38 +80,6 @@ export default function ClicksChart({ series, loading }: Props) {
       </div>
     );
   }
-
-  const options: ChartOptions<'line'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: {
-        ticks: { color: token.colorTextSecondary },
-        grid: { color: token.colorSplit },
-      },
-      y: {
-        beginAtZero: true,
-        ticks: { precision: 0, color: token.colorTextSecondary },
-        grid: { color: token.colorSplit },
-      },
-    },
-  };
-
-  const data = {
-    labels: series.map((point) => point.day),
-    datasets: [
-      {
-        label: 'Clicks',
-        data: series.map((point) => point.count),
-        borderColor: token.colorPrimary,
-        backgroundColor: token.colorPrimaryBg,
-        fill: true,
-        tension: 0.3,
-        pointRadius: 3,
-      },
-    ],
-  };
 
   return (
     <div className={styles.chartBox}>

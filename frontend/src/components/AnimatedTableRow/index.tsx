@@ -1,5 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
 
+import { prefersReducedMotion } from '@/utils/motion';
+
 // FLIP row for antd Table (components.body.row): when sorting reorders rows,
 // each row animates from its previous offset instead of snapping
 export default function AnimatedTableRow(props: React.HTMLAttributes<HTMLTableRowElement>) {
@@ -15,7 +17,7 @@ export default function AnimatedTableRow(props: React.HTMLAttributes<HTMLTableRo
     lastOffsetTop.current = offsetTop;
 
     if (previous === null || previous === offsetTop) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (prefersReducedMotion()) return;
 
     node.animate(
       [{ transform: `translateY(${previous - offsetTop}px)` }, { transform: 'translateY(0)' }],

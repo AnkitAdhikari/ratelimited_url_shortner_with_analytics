@@ -1,6 +1,10 @@
+import { BRAND_ACCENT, HEADER_BG } from '@/constants';
 import type { DailyCount, UrlSummary } from '@/types/urlTypes';
 
-const BRAND_ARGB = 'FF2A1E5C';
+const toArgb = (hex: string) => `FF${hex.slice(1).toUpperCase()}`;
+
+const HEADER_BG_ARGB = toArgb(HEADER_BG);
+const HEADER_TEXT_ARGB = toArgb(BRAND_ACCENT);
 
 function triggerDownload(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -26,8 +30,8 @@ function csvBlob(header: string[], rows: (string | number)[][]): Blob {
 
 function styleHeaderRow(sheet: import('exceljs').Worksheet) {
   const header = sheet.getRow(1);
-  header.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-  header.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: BRAND_ARGB } };
+  header.font = { bold: true, color: { argb: HEADER_TEXT_ARGB } };
+  header.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: HEADER_BG_ARGB } };
   header.alignment = { vertical: 'middle' };
   header.height = 20;
 }

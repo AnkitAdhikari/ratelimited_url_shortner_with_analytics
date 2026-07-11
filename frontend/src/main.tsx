@@ -9,7 +9,7 @@ import ThemeProvider from '@/providers/ThemeProvider';
 import { store } from '@/redux/store/store';
 import { Routes } from './routes.tsx';
 
-const router = createBrowserRouter([...Routes]);
+const router = createBrowserRouter(Routes);
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
