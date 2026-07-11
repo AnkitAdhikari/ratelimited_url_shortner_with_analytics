@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import 'antd/dist/reset.css';
 
-import FontConfigProvider from '@/providers/FontConfigProvider';
+import ThemeProvider from '@/providers/ThemeProvider';
 import { store } from '@/redux/store/store';
 import { Routes } from './routes.tsx';
 
@@ -19,9 +19,9 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <Provider store={store}>
-      <FontConfigProvider>
+      <ThemeProvider>
         <RouterProvider router={router} />
-      </FontConfigProvider>
+      </ThemeProvider>
     </Provider>
   </StrictMode>,
 );

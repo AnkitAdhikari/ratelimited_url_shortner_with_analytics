@@ -1,4 +1,4 @@
-import { Empty, Spin } from 'antd';
+import { Empty, Spin, theme } from 'antd';
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -17,24 +17,15 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip,
 
 const CHART_HEIGHT = 320;
 
-const options: ChartOptions<'line'> = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: { legend: { display: false } },
-  scales: {
-    y: {
-      beginAtZero: true,
-      ticks: { precision: 0 },
-    },
-  },
-};
-
 interface Props {
   series: DailyCount[];
   loading: boolean;
 }
 
 export default function ClicksChart({ series, loading }: Props) {
+  // chart colors come from the active antd theme so both modes stay readable
+  const { token } = theme.useToken();
+
   if (loading) {
     return (
       <div style={{ height: CHART_HEIGHT, display: 'grid', placeItems: 'center' }}>
@@ -51,14 +42,31 @@ export default function ClicksChart({ series, loading }: Props) {
     );
   }
 
+  const options: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: {
+        ticks: { color: token.colorTextSecondary },
+        grid: { color: token.colorSplit },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: { precision: 0, color: token.colorTextSecondary },
+        grid: { color: token.colorSplit },
+      },
+    },
+  };
+
   const data = {
     labels: series.map((point) => point.day),
     datasets: [
       {
         label: 'Clicks',
         data: series.map((point) => point.count),
-        borderColor: '#1677ff',
-        backgroundColor: 'rgba(22, 119, 255, 0.15)',
+        borderColor: token.colorPrimary,
+        backgroundColor: token.colorPrimaryBg,
         fill: true,
         tension: 0.3,
         pointRadius: 3,

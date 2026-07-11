@@ -1,7 +1,10 @@
-import { Layout as AntLayout, Menu, Typography } from 'antd';
+import { MoonOutlined, SunOutlined } from '@ant-design/icons';
+import { Layout as AntLayout, Menu, Switch, Typography } from 'antd';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import { GREPSR_BRAND_COLOR } from '@/constants';
+import { selectThemeMode, themeToggled } from '@/redux/feature/themeSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
 import { DASHBOARD_ROUTE, HOME_ROUTE } from '@/routes/routeNames';
 
 const { Header, Content } = AntLayout;
@@ -14,6 +17,9 @@ const menuItems = [
 export default function Layout() {
   const { pathname } = useLocation();
   const selectedKey = pathname.startsWith(DASHBOARD_ROUTE) ? DASHBOARD_ROUTE : HOME_ROUTE;
+
+  const dispatch = useAppDispatch();
+  const themeMode = useAppSelector(selectThemeMode);
 
   return (
     <AntLayout style={{ minHeight: '100vh' }}>
@@ -34,6 +40,13 @@ export default function Layout() {
           selectedKeys={[selectedKey]}
           items={menuItems}
           style={{ backgroundColor: 'transparent', flex: 1, minWidth: 0 }}
+        />
+        <Switch
+          checked={themeMode === 'dark'}
+          onChange={() => dispatch(themeToggled())}
+          checkedChildren={<MoonOutlined />}
+          unCheckedChildren={<SunOutlined />}
+          aria-label="Toggle dark mode"
         />
       </Header>
       <Content style={{ width: '100%', maxWidth: 960, margin: '0 auto', padding: 24 }}>
