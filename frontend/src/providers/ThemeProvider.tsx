@@ -1,4 +1,4 @@
-import { ConfigProvider, theme as antdTheme } from 'antd';
+import { App as AntApp, ConfigProvider, theme as antdTheme } from 'antd';
 import { useEffect } from 'react';
 
 import { GREPSR_BRAND_COLOR, GREPSR_BRAND_FONT } from '@/constants';
@@ -9,20 +9,19 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
   const mode = useAppSelector(selectThemeMode);
 
   useEffect(() => {
-    // stylesheets read the brand color as var(--brand); constants.ts stays the single source
     document.documentElement.style.setProperty('--brand', GREPSR_BRAND_COLOR);
   }, []);
 
   useEffect(() => {
     window.localStorage.setItem(THEME_STORAGE_KEY, mode);
-    // keeps native UI (scrollbars, form controls) in sync with the app theme
+    // keep native scrollbars/form controls in sync with the theme
     document.documentElement.style.colorScheme = mode;
   }, [mode]);
 
   return (
     <ConfigProvider
       theme={{
-        // emit tokens as --ant-* CSS variables so CSS Modules stay theme-aware
+        // expose tokens as --ant-* css variables for stylesheets
         cssVar: {},
         algorithm: mode === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
         token: {
@@ -30,7 +29,7 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
         },
       }}
     >
-      {children}
+      <AntApp message={{ maxCount: 2 }}>{children}</AntApp>
     </ConfigProvider>
   );
 }

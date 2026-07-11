@@ -1,4 +1,4 @@
-import { Empty, Spin, theme } from 'antd';
+import { Empty, theme } from 'antd';
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -11,6 +11,8 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
+import loaderCat from '@/assets/lottie/loder-cat.json';
+import LottieBox from '@/components/LottieBox';
 import type { DailyCount } from '@/types/urlTypes';
 import styles from './dashboard.module.css';
 
@@ -22,13 +24,12 @@ interface Props {
 }
 
 export default function ClicksChart({ series, loading }: Props) {
-  // chart colors come from the active antd theme so both modes stay readable
   const { token } = theme.useToken();
 
   if (loading) {
     return (
       <div className={styles.centerBox}>
-        <Spin />
+        <LottieBox animationData={loaderCat} size="6rem" ariaLabel="Loading click data" />
       </div>
     );
   }

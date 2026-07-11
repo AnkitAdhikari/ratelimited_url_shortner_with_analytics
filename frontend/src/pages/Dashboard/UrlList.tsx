@@ -21,7 +21,7 @@ export default function UrlList({ urls, loading, selectedAlias, onSelect }: Prop
     {
       title: 'Target URL',
       dataIndex: 'longURL',
-      // truncate in place; the Tooltip shows the full URL (showTitle off avoids a double tooltip)
+      // showTitle off: the Tooltip already shows the full URL
       ellipsis: { showTitle: false },
       render: (longURL: string) => (
         <Tooltip title={longURL}>

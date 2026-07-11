@@ -1,14 +1,17 @@
 import { ReloadOutlined } from '@ant-design/icons';
 import { skipToken } from '@reduxjs/toolkit/query';
-import { Alert, Button, Card, Empty, Space } from 'antd';
+import { Alert, App, Button, Card, Empty, Space } from 'antd';
 import { useState } from 'react';
 
+import loaderCat from '@/assets/lottie/loder-cat.json';
+import LottieBox from '@/components/LottieBox';
 import { useGetAliasAnalyticsQuery, useGetUrlsQuery } from '@/redux/services/urls';
 import ClicksChart from './ClicksChart';
 import styles from './dashboard.module.css';
 import UrlList from './UrlList';
 
 export default function Dashboard() {
+  const { message } = App.useApp();
   const [selectedAlias, setSelectedAlias] = useState<string | null>(null);
 
   const {
@@ -25,9 +28,16 @@ export default function Dashboard() {
     refetch: refetchAnalytics,
   } = useGetAliasAnalyticsQuery(selectedAlias ?? skipToken);
 
-  function handleRefresh() {
-    void refetchUrls();
-    if (selectedAlias !== null) void refetchAnalytics();
+  async function handleRefresh() {
+    const jobs: Promise<unknown>[] = [refetchUrls().unwrap()];
+    if (selectedAlias !== null) jobs.push(refetchAnalytics().unwrap());
+
+    try {
+      await Promise.all(jobs);
+      void message.success('Dashboard refreshed');
+    } catch {
+      void message.error('Could not refresh. Try again.');
+    }
   }
 
   return (
@@ -36,7 +46,7 @@ export default function Dashboard() {
         <Card
           title="Your URLs"
           extra={
-            <Button icon={<ReloadOutlined />} onClick={handleRefresh} loading={urlsLoading}>
+            <Button icon={<ReloadOutlined />} onClick={() => void handleRefresh()} loading={urlsLoading}>
               Refresh
             </Button>
           }
@@ -65,7 +75,10 @@ export default function Dashboard() {
         <Card title="Clicks (last 7 days)">
           {selectedAlias === null ? (
             <div className={styles.centerBox}>
-              <Empty description="Select a URL to see its click history" />
+              <Empty
+                image={<LottieBox animationData={loaderCat} size="6rem" ariaLabel="" />}
+                description="Select a URL to see its click history"
+              />
             </div>
           ) : analyticsError ? (
             <Alert

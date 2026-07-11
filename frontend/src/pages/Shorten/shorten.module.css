@@ -32,6 +32,16 @@
   margin-top: 1rem;
 }
 
+/* reserves room for the tallest alert so feedback never shifts the card */
+.feedback {
+  min-height: 6rem;
+}
+
+/* keeps the button width stable when the loading spinner appears */
+.submit {
+  min-width: 7.5rem;
+}
+
 @media (max-width: 36rem) {
   .hero {
     justify-content: flex-start;

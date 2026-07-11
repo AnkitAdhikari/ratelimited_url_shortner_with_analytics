@@ -29,7 +29,7 @@ export const rateLimitSlice = createSlice({
       state.until = null;
     },
   },
-  // every 429 from createShortUrl lands here, so any component can react to it
+  // any createShortUrl 429 lands here
   extraReducers: (builder) => {
     builder.addMatcher(urlsApi.endpoints.createShortUrl.matchRejected, (state, action) => {
       const error = action.payload;

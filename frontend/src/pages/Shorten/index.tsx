@@ -1,8 +1,11 @@
-import { Alert, Button, Card, Input, Space, Typography } from 'antd';
+import { Alert, App, Button, Card, Input, Space, Typography } from 'antd';
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import clockWait from '@/assets/lottie/clock-wait.json';
+import successCheck from '@/assets/lottie/success-check.json';
+import LottieBox from '@/components/LottieBox';
 import { rateLimitCleared, selectRateLimitUntil } from '@/redux/feature/rateLimitSlice';
 import { useCreateShortUrlMutation } from '@/redux/services/urls';
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks';
@@ -33,6 +36,7 @@ function describeError(
 }
 
 export default function Shorten() {
+  const { message } = App.useApp();
   const [url, setUrl] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -84,7 +88,7 @@ export default function Shorten() {
     try {
       await createShortUrl(trimmedUrl).unwrap();
     } catch {
-      // surfaced through the mutation's error state and the rateLimit slice
+      // handled via the mutation error state and rateLimit slice
     }
   }
 
@@ -113,6 +117,7 @@ export default function Shorten() {
             />
             <Button
               type="primary"
+              className={styles.submit}
               onClick={() => void handleSubmit()}
               loading={isLoading}
               disabled={!canSubmit}
@@ -121,48 +126,65 @@ export default function Shorten() {
             </Button>
           </Space.Compact>
 
-          {validationMessage !== null && (
-            <Typography.Text type="danger" role="alert">
-              {validationMessage}
-            </Typography.Text>
-          )}
+          {/* fixed-height region so alerts appearing/disappearing never shift the layout */}
+          <div className={styles.feedback} aria-live="polite">
+            {validationMessage !== null && (
+              <Typography.Text type="danger" role="alert">
+                {validationMessage}
+              </Typography.Text>
+            )}
 
-          {rateLimitUntil !== null && (
-            <Alert
-              type="warning"
-              showIcon
-              message="Rate limit reached"
-              description={`Too many requests. You can try again in ${secondsLeft}s.`}
-            />
-          )}
+            {rateLimitUntil !== null && (
+              <Alert
+                type="warning"
+                showIcon
+                icon={<LottieBox animationData={clockWait} size="2.5rem" ariaLabel="Waiting" />}
+                message="Rate limit reached"
+                description={`Too many requests. You can try again in ${secondsLeft}s.`}
+              />
+            )}
 
-          {rateLimitUntil === null && errorMessage !== null && (
-            <Alert
-              type="error"
-              showIcon
-              closable
-              message={errorMessage}
-              onClose={() => {
-                setFormError(null);
-                reset();
-              }}
-            />
-          )}
+            {rateLimitUntil === null && errorMessage !== null && (
+              <Alert
+                type="error"
+                showIcon
+                closable
+                message={errorMessage}
+                onClose={() => {
+                  setFormError(null);
+                  reset();
+                }}
+              />
+            )}
 
-          {rateLimitUntil === null && created !== undefined && (
-            <Alert
-              type="success"
-              showIcon
-              message="Short URL created"
-              description={
-                <Typography.Text copyable={{ text: created.shortURL }}>
-                  <a href={created.shortURL} target="_blank" rel="noreferrer">
-                    {created.shortURL}
-                  </a>
-                </Typography.Text>
-              }
-            />
-          )}
+            {rateLimitUntil === null && created !== undefined && (
+              <Alert
+                type="success"
+                showIcon
+                icon={
+                  <LottieBox
+                    animationData={successCheck}
+                    loop={false}
+                    size="2.5rem"
+                    ariaLabel="Success"
+                  />
+                }
+                message="Short URL created"
+                description={
+                  <Typography.Text
+                    copyable={{
+                      text: created.shortURL,
+                      onCopy: () => void message.success('Link copied to clipboard'),
+                    }}
+                  >
+                    <a href={created.shortURL} target="_blank" rel="noreferrer">
+                      {created.shortURL}
+                    </a>
+                  </Typography.Text>
+                }
+              />
+            )}
+          </div>
         </Space>
       </Card>
 

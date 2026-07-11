@@ -18,7 +18,6 @@
   min-width: 0;
 }
 
-/* pages own their width: the hero bleeds full-width, the dashboard centers itself */
 .content {
   display: flex;
   flex-direction: column;

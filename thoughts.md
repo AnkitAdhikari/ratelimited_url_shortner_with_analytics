@@ -83,9 +83,9 @@ Typescript based express and react fullstack app for url shortner which implemen
 - [x] Transform code base to use RTK and RTKQuery (folder structure from previous project: redux/store+services+feature, routes, layout, types)
 - [x] light and darkmode
 - [x] Responsiveness (CSS Modules migration with rem units + media queries: header breakpoint, hero clamp, table scroll on mobile, dashboard padding)
-- Toast
+- [x] Toast implementation on refresh button
 - Gamified feedback on rate limitations
-- include lottie micro-interations
+- [x] include lottie micro-interations (3 downloaded animations: success check draw, rate-limit clock, cat loder)
 - sheetjs exports
 - OG image and SEO optimization
 - [x] Add error boundry
